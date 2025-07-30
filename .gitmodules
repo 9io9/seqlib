@@ -1,0 +1,6 @@
+[submodule "include/chdrs"]
+	path = include/chdrs
+	url = git@github.com:9io9/chdrs.git
+[submodule "lib/cmth"]
+	path = lib/cmth
+	url = git@github.com:9io9/cmth.git
