@@ -22,6 +22,7 @@ Error que_deqb(Que* que, void* data);
 Error que_deqf(Que* que, void* data);
 Error que_front(Que* que, void* data);
 Error que_back(Que* que, void* data);
+Error que_foreach(Que* que, VisFn fvisit);
 Error que2vec(Que* que, Vec* vec);
 Error que_destroy(Que* que);
 

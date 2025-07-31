@@ -39,24 +39,24 @@ Error que_expand(Que* que) {
         return ERROR("queue has a NULL copy function");
     }
     
-    que->cap <<= 1;
+    int qcap = que->cap << 1;
 
-    void* nq = malloc(que->cap * que->esize);
+    void* nq = malloc(qcap * que->esize);
 
     if (nq == NULL) {
-        que->cap >>= 1;
         return ERROR("malloc returns NULL, lack of memory");
     }
 
-    for (int i = 0; i < que->size; ++i) {
-        que->fcopy(at(nq, i, que->esize), at(que->q, que->begin + i, que->esize));
+    for (int i = 1; i <= que->size; ++i) {
+        que->fcopy(at(nq, i, que->esize), at(que->q, modi32(que->begin + i, que->cap).result.data.to_i32, que->esize));
     }
 
     free(que->q);
 
     que->begin = 0;
-    que->end = que->size - 1;
+    que->end = que->size;
     que->q = nq;
+    que->cap = qcap;
 
     return ERROR(NULL);
 }
@@ -209,6 +209,22 @@ Error que_back(Que* que, void* data) {
     return ERROR(NULL);
 }
 
+Error que_foreach(Que* que, VisFn fvisit) {
+    if (que == NULL || fvisit == NULL) {
+        return ERROR("que == NULL or fvisit == NULL");
+    }
+
+    if (que->q == NULL) {
+        return ERROR("queue has a NULL pointer");
+    }
+
+    for (int i = 0; i < que->size; ++i) {
+        fvisit(at(que->q, modi32(que->begin + i + 1, que->cap).result.data.to_i32, que->esize));
+    }
+
+    return ERROR(NULL);
+}
+
 Error que2vec(Que* que, Vec* vec) {
     if (que == NULL || vec == NULL) {
         return ERROR("que == NULL or vec == NULL");
@@ -233,9 +249,8 @@ Error que2vec(Que* que, Vec* vec) {
     }
 
     for (int i = 0; i < que->size; ++i) {
-        que->fcopy(at(vec->v, i, que->esize), at(que->q, que->end, que->esize));
         // sure for no error
-        que->end = mmodi32(que->end - 1, que->cap).result.data.to_i32;
+        que->fcopy(at(vec->v, i, que->esize), at(que->q, modi32(que->begin + i + 1, que->cap).result.data.to_i32, que->esize));
     }
 
     vec->size = que->size;
