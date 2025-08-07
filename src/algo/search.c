@@ -30,7 +30,7 @@ static Result pfind(void* base, int l, int r, int es, CmpFn fcmp, SwapFn fswap) 
                 break;
             }
 
-            default: return RESULT_FAIL("invalid return value for compare function");
+            default: return RESULT_FAIL("invalid return value for compare function", ECODE(SEQLIB, ALGO, IVE));
         }
     }
 
@@ -50,7 +50,7 @@ static Result asc(void* base, int l, int r, int es, CmpFn fcmp) {
                 break;
             }
 
-            default: return RESULT_FAIL("invalid return value for compare function");
+            default: return RESULT_FAIL("invalid return value for compare function", ECODE(SEQLIB, ALGO, IVE));
         }
     }
 
@@ -59,23 +59,23 @@ static Result asc(void* base, int l, int r, int es, CmpFn fcmp) {
 
 static Error qsort(void* base, int l, int r, int es, CmpFn fcmp, SwapFn fswap) {
     if (l >= r) {
-        return ERROR(NULL);
+        return ERROR(NULL, 0);
     }
 
     Result pr = asc(base, l, r, es, fcmp);
 
     if (!pr.has_value) {
-        return ERROR(pr.result.error.message);
+        return pr.result.error;
     }
 
     if (pr.result.data.to_i32) {
-        return ERROR(NULL);
+        return ERROR(NULL, 0);
     }
 
     pr = pfind(base, l, r, es, fcmp, fswap);
 
     if (!pr.has_value) {
-        return ERROR(pr.result.error.message);
+        return pr.result.error;
     }
 
     Error error = qsort(base, l, pr.result.data.to_i32, es, fcmp, fswap);
@@ -89,7 +89,7 @@ static Error qsort(void* base, int l, int r, int es, CmpFn fcmp, SwapFn fswap) {
 
 Result seq_bsearch(range rng, void* data, CmpFn fcmp) {
     if (rng.begin == NULL || rng.end == NULL || fcmp == NULL || data == NULL) {
-        return RESULT_FAIL("rng.begin == NULL or rng.end == NULL or fcmp == NULL or data == NULL");
+        return RESULT_FAIL("rng.begin == NULL or rng.end == NULL or fcmp == NULL or data == NULL", ECODE(SEQLIB, ALGO, ARGV));
     }
 
     int l = 0, r = (rng.end - rng.begin) / rng.s;
@@ -112,16 +112,16 @@ Result seq_bsearch(range rng, void* data, CmpFn fcmp) {
                 return RESULT_SUC(i32, m);
             }
 
-            default: return RESULT_FAIL("invalid return value for compare function");
+            default: return RESULT_FAIL("invalid return value for compare function", ECODE(SEQLIB, ALGO, IVE));
         }
     }
 
-    return RESULT_FAIL("no data found in range");
+    return RESULT_FAIL("no data found in range", ECODE(SEQLIB, ALGO, DNF));
 }
 
 Error seq_sort(range rng, CmpFn fcmp, SwapFn fswap) {
     if (rng.begin == NULL || rng.end == NULL || fcmp == NULL || fswap == NULL) {
-        return ERROR("rng.begin == NULL or rng.end == NULL or fcmp == NULL or fswap == NULL");
+        return ERROR("rng.begin == NULL or rng.end == NULL or fcmp == NULL or fswap == NULL", ECODE(SEQLIB, ALGO, ARGV));
     }
     
     return qsort(rng.begin, 0, (rng.end - rng.begin) / rng.s, rng.s, fcmp, fswap);

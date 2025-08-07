@@ -6,6 +6,10 @@ static void i32copy(void* d, void* s) {
     *(int*)d = *(int*)s;
 }
 
+static void i32pvisit(void* d) {
+    printf("%d ", *(int*)d);
+}
+
 static void ferr(Error* error) {
     if (error->message != NULL) {
         fprintf(stderr, "line %u, function %s, file %s for %s\n", error->line, error->function, error->file, error->message);
@@ -31,6 +35,10 @@ int main(int argc, char* argv[]) {
 
         ferr(&error);
     }
+
+    error = vec_foreach(&v, i32pvisit);
+
+    ferr(&error);
 
     for (int i = 0; i < argc - 2; ++i) {
         int d = 0, td = strtol(argv[i + 2], &ep, 10);

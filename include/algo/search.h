@@ -4,6 +4,7 @@
 
 #include "chdrs/result.h"
 #include "chdrs/fn.h"
+#include "ec.h"
 
 typedef struct {
     int s; // size for a element
