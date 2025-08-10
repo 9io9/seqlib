@@ -119,6 +119,41 @@ Result seq_bsearch(range rng, void* data, CmpFn fcmp) {
     return RESULT_FAIL("no data found in range", ECODE(SEQLIB, ALGO, DNF));
 }
 
+Error seq_ibsearch(range rng, void* data, CmpFn fcmp, int* index) {
+    if (rng.begin == NULL || rng.end == NULL || fcmp == NULL || data == NULL) {
+        return ERROR("rng.begin == NULL or rng.end == NULL or fcmp == NULL or data == NULL", ECODE(SEQLIB, ALGO, ARGV));
+    }
+
+    int l = 0, r = (rng.end - rng.begin) / rng.s;
+
+    while (l <= r) {
+        int m = (l + r) >> 1;
+
+        switch (fcmp(at(rng.begin, m, rng.s), data)) {
+            case left: {
+                r = m - 1;
+                break;
+            }
+
+            case right: {
+                l = m + 1;
+                break;
+            }
+
+            case equal: {
+                *index = m;
+                return ERROR(NULL, 0);
+            }
+
+            default: return ERROR("invalid return value for compare function", ECODE(SEQLIB, ALGO, IVE));
+        }
+    }
+
+    *index = l;
+
+    return ERROR("no data found in range", ECODE(SEQLIB, ALGO, DNF));
+}
+
 Error seq_sort(range rng, CmpFn fcmp, SwapFn fswap) {
     if (rng.begin == NULL || rng.end == NULL || fcmp == NULL || fswap == NULL) {
         return ERROR("rng.begin == NULL or rng.end == NULL or fcmp == NULL or fswap == NULL", ECODE(SEQLIB, ALGO, ARGV));

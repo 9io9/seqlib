@@ -13,6 +13,7 @@ typedef struct {
 }range;
 
 Result seq_bsearch(range rng, void* data, CmpFn fcmp);
+Error seq_ibsearch(range rng, void* data, CmpFn fcmp, int* index);
 Error seq_sort(range rng, CmpFn fcmp, SwapFn fswap);
 
 #endif
