@@ -19,12 +19,51 @@ add_library(seqlib STATIC src/vec.c src/que.c src/list.c src/arr.c)
 add_library(algo STATIC src/algo/search.c)
 add_dependencies(seqlib seqgech)
 
-add_subdirectory(lib/cmth)
-add_subdirectory(lib/aLocas)
-
-target_include_directories(algo PRIVATE include lib)
 target_include_directories(seqlib PRIVATE include lib)
-target_link_libraries(seqlib algo cmth aLocas)
+target_include_directories(algo PRIVATE include lib)
+
+find_package(aLocas REQUIRED)
+find_package(cmth REQUIRED)
+
+target_link_libraries(seqlib aLocas::aLocas cmth::cmth algo)
+
+set_target_properties(seqlib PROPERTIES EXPORT_NAME seqlib)
+
+install(
+    TARGETS seqlib algo
+    EXPORT seqlibTargets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+install(DIRECTORY include DESTINATION .)
+install(
+    EXPORT seqlibTargets
+    FILE seqlibTargets.cmake
+    NAMESPACE seqlib::
+    DESTINATION lib/cmake/seqlib
+)
+
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+    seqlibConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_file(seqlibConfig.cmake.in seqlibConfig.cmake @ONLY)
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/seqlibConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/seqlibConfigVersion.cmake"
+    DESTINATION lib/cmake/seqlib
+)
+install(
+    EXPORT seqlibTargets
+    FILE seqlibTargets.cmake
+    NAMESPACE seqlib::
+    DESTINATION lib/cmake/seqlib
+)
 
 enable_testing()
 add_subdirectory(test)
