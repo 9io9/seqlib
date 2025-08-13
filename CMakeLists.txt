@@ -37,12 +37,6 @@ install(
     RUNTIME DESTINATION bin
 )
 install(DIRECTORY include DESTINATION .)
-install(
-    EXPORT seqlibTargets
-    FILE seqlibTargets.cmake
-    NAMESPACE seqlib::
-    DESTINATION lib/cmake/seqlib
-)
 
 include(CMakePackageConfigHelpers)
 
