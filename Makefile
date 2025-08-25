@@ -16,12 +16,12 @@ init:
 build: build/libseqlib.a build/libseqlib.so
 tbuild: build/libseqlib.a
 test: build/test/algo build/test/arr build/test/list build/test/que build/test/vec
-	./build/test/algo sort 72 44 11 23 55 66 77 88 99 72 23
-	./build/test/algo search 1 2 5 33 46 79 80 83 92
-	./build/test/arr 10 72 44 11 23 55 66 77 88 99 72
-	./build/test/list 72 44 11 23 55 66
-	./build/test/que 5 72 44 11 23 55 66
-	./build/test/vec 10 72 44 11 23 55 66 77 88 99 72 23
+	./build/test/algo sort 72 44 11 23 55 66 77 88 99 72 23 > /dev/null && echo "Test algo sort Passed" || echo "Test algo sort Failed"
+	./build/test/algo search 1 2 5 33 46 79 80 83 92 > /dev/null && echo "Test algo search Passed" || echo "Test algo search Failed"
+	./build/test/arr 10 72 44 11 23 55 66 77 88 99 72 > /dev/null && echo "Test arr Passed" || echo "Test arr Failed"
+	./build/test/list 72 44 11 23 55 66 > /dev/null && echo "Test list Passed" || echo "Test list Failed"
+	./build/test/que 5 72 44 11 23 55 66 > /dev/null && echo "Test que Passed" || echo "Test que Failed"
+	./build/test/vec 10 72 44 11 23 55 66 77 88 99 72 23 > /dev/null && echo "Test sort Passed" || echo "Test sort Failed"
 install: build/libseqlib.a build/libseqlib.so build/libseqlib.so.a .sym
 	mkdir -p install/include
 	cp -r include/* install/include/
