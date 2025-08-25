@@ -35,8 +35,11 @@ build/libseqlib.a: build/algo.o build/struct.o lib/aLocas/libaLocas.a lib/cmth/l
 	${AR} rcs $@ build/libseqlib.o
 build/libseqlib.so: build/shared/struct.o build/shared/algo.o lib/cmth/libcmth.so.a lib/aLocas/libaLocas.so.a
 	${CC} -shared -Wl,--version-script=.map $^ -o $@
-build/libseqlib.so.a: build/shared/struct.o build/shared/algo.o
-	${AR} rcs $@ $^
+build/libseqlib.so.a: build/shared/struct.o build/shared/algo.o lib/aLocas/libaLocas.so.a lib/cmth/libcmth.so.a
+	${LD} -r $^ -o build/libseqlib.so.o
+	objcopy --localize-symbols=lib/aLocas/.sym build/libseqlib.so.o
+	objcopy --localize-symbols=lib/cmth/.sym build/libseqlib.so.o
+	${AR} rcs $@ build/libseqlib.so.o
 build/test/%: test/%.c build/libseqlib.a
 	${CC} ${cflags} $^ -o $@
 
